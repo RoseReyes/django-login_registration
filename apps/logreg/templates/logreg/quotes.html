@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'logreg/css/loginReg.css' %}" media="screen" title="no title"  charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div class="main">
+        <div class="left-header">
+            <h4>Welcome, {{ user.name }}!</h4>
+        </div>
+        <div class="right-header">
+            <a href="{% url 'my_logout' %}">Logout</a></h4>
+        </div>
+        <div class="myBox">
+            <h4>Quotable Quote</h4>
+            {% for posted_by in all_user %}
+                {% for post in posted_by.uploaded_quotes.all %}
+                    <div class="subquotes">
+                        <p> {{ post.quoted_by }} - {{ post.message }}</p>
+                        <form action="/showUserPost", method="POST">
+                            {% csrf_token %}
+                            <p>posted by: <input class="submitLink" type="submit" name="show_user" value="{{ posted_by.name }}"></p>
+                            <input type="hidden" name="post_id" value="{{ post.id }}">
+                        </form>
+                        <form action="/addFavorite", method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="post_id" value="{{ post.id }}">
+                            <input type="submit" name="add_to_fav" value="Add to My List" >
+                        </form>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+        <div class="myFav">
+            <h4>Your Favorites</h4>
+                {% for my_fav in all_favorites %}
+                        <div class="subquotes">
+                            <p> {{ my_fav.quoted_by }} - {{ my_fav.message }}</p>
+                            <form action="/showUserPost", method="POST">
+                                {% csrf_token %}
+                                <p>posted by: <input class="submitLink" type="submit" name="show_user" value="{{ my_fave.posted_by }}"></p>
+                                <input type="hidden" name="post_id" value="{{ post.id }}">
+                            </form>
+                            <form action="/delFavorite", method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="fav_id" value="{{ my_fav.id }}">
+                                <input type="submit" name="add_to_fav" value="Remove to My List" >
+                            </form>
+                        </div>
+                {% endfor %}        
+        </div>
+        <div class="addQuote">
+            <br>
+            <p><b>Contribute a Quote</b></p>
+            <ul>
+                {% for message in messages %}
+                    {% if 'quoteError' in message.extra_tags %}
+                        <li>{{ message }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <br>
+            <form action="/addQuote", method="POST">
+                {% csrf_token %}  
+                <p>Quoted by: <input type="text" name="quotedBy"></p>
+                <br>
+                <p>Message:</p>
+                <p><textarea name="desc"></textarea></p>
+                <input type="submit" name="submit" value="Submit" >
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+
+

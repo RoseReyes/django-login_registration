@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'logreg/css/loginReg.css' %}" media="screen" title="no title"  charset="utf-8">
+    <title>Document</title>
+</head>
+<body>
+    <div class="wrapper">
+        <h4>Welcome! <a href="{% url 'my_logout' %}">Log out</a></h4>
+        <div class="registration">
+            <form action="/registration" method="POST">
+                {% csrf_token %}
+                    <table class="loginForm">
+                            <ul>
+                                {% for message in messages %}
+                                    {% if 'registerError' in message.extra_tags %}
+                                        <li>{{ message }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                            <tbody class="loginForm">
+                                <tr >
+                                    <td>Name:</td>
+                                    <td><input type="text" name="name" class="loginInput"></td>
+                                </tr>
+                                <tr>
+                                    <td>Alias:</td>
+                                    <td><input type="text" name="alias" class="loginInput"></td>
+                                </tr>
+                                <tr>
+                                    <td>Email:</td>
+                                    <td><input type="email" name="email" class="loginInput"></td>
+                                </tr>
+                                <tr>
+                                    <td>Password:</td>
+                                    <td><input type="password" name="password" class="loginInput"></td>
+                                </tr>
+                                <tr>
+                                    <td>Confirm Password:</td>
+                                    <td>*Password should be atleast 8 characters<input type="password" name="cpassword" class="loginInput"></td>
+                                </tr>
+                                <tr>
+                                    <td>Date of Birth:</td>
+                                    <td><input type="date" name="bday" class="loginInput"></td>
+                                </tr>
+                                    <td><input type="submit" value="Register"></td>
+                                </tr>
+                            </tbody> 
+                    </table>
+            </form>
+        </div>
+        <div class="login">
+                <form action="/login" method="POST">
+                    {% csrf_token %}
+                    <table class="loginForm">
+                            <ul>
+                                {% for message in messages %}
+                                    {% if 'loginError' in message.extra_tags %}
+                                        <li>{{ message }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        <tbody class="loginForm">
+                            <tr>
+                                <td>Email:</td>
+                                <td><input type="email" name="email" class="loginInput"></td>
+                            </tr>
+                            <tr>
+                                <td>Password:</td>
+                                <td><input type="password" name="password" class="loginInput"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="submit" value="Login"></td>
+                            </tr>
+                        </tbody> 
+                    </table>
+                </form>
+            </div>
+    </div>
+</body>
+</html>

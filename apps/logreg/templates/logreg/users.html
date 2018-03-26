@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="right-menu">
+            <a href="{% url 'dashboard' %}">Dashboard</a> | <a href="{% url 'my_logout' %}">Logout</a>
+        </div>
+        <div class="user-section">
+            <h3>Posts by: {{ request.session.user_name }}</h3>
+            <h4>Count: {{ user.count }}</h4>
+                {% for post in user %}
+                    <p> {{ post.quoted_by }} - {{ post.message }}</p>
+                {% endfor %} 
+        </div>
+    </div>
+</body>
+</html>
