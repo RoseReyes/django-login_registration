@@ -13,7 +13,7 @@ def registration(request):
     response = User.objects.validate_register(request.POST)
     if response['status'] == True:
        request.session['user_id'] = response['user_id']
-       return redirect('/quotes')
+       return redirect('/landing_page')
     else: 
         for error in response['errors']:
             messages.error(request, error, extra_tags="registerError")
@@ -27,19 +27,20 @@ def login(request):
             return redirect('/')
         request.session['user_id'] = result.id
         messages.success(request, 'Successfully logged in!')
-        return redirect('/quotes')
+        return redirect('/landing_page')
 
-def quotes(request):
+def landing_page(request):
     if 'user_id' not in request.session:
         return redirect('/')
+    user = User.objects.get(id=request.session['user_id'])
     context ={
-        'all_favorites': User.objects.get(id=request.session['user_id']).liked_posts.all(),
-        'all_user' : User.objects.all().order_by("-created_at"),
+        'liked_quotes': Post.objects.filter(liked_by = user),
+        'unliked_quotes': Post.objects.exclude(liked_by = user),
         'user':User.objects.get(id=request.session['user_id'])
     }
     return render(request,'logreg/quotes.html', context)
 
-def addQuote(request):
+def createPost(request):
     user = User.objects.get(id=request.session['user_id'])
     error = []
     isvalid = False
@@ -51,33 +52,30 @@ def addQuote(request):
         error.append("Quotes should not be less than 10 characters")
         for item in error:
             messages.error(request, item, extra_tags ="quoteError")
-            return redirect('/quotes')
+            return redirect('/landing_page')
             isvalid = True
 
     Post.objects.create(posted_by=user, message=request.POST['desc'], quoted_by = request.POST['quotedBy'])
-    return redirect('/quotes')
+    return redirect('/landing_page')
 
-def addFavorite(request):
+def createFavorite(request):
     # add to the db - relationship table
-    request.session['user_post'] = request.POST['post_id']
-    User.objects.get(id=request.session['user_id']).liked_posts.add(Post.objects.get(id=request.session['user_post']))
-    return redirect('/quotes')
+    user_id = request.session['user_id']
+    post_id= request.POST['post_id']
+    User.objects.get(id=user_id).liked_posts.add(Post.objects.get(id=post_id))
+    return redirect('/landing_page')
 
-def delFavorite(request):
+def removeFavorite(request):
     #delete to the db - relationship table
-    User.objects.get(id=request.session['user_id']).liked_posts.remove(Post.objects.get(id=request.POST['fav_id']))
-    return redirect('/quotes')
+    user_id = request.session['user_id']
+    post_id= request.POST['post_id']
+    User.objects.get(id=user_id).liked_posts.remove(Post.objects.get(id=post_id))
+    return redirect('/landing_page')
 
-def showUserPost(request):
-    # get the name who uploaded the quote/s and it's post_id to be displayed in the users page
-    request.session['user_name'] = request.POST['show_user']
-    request.session['user_post'] = request.POST['post_id']
-    return redirect ('/users')
-
-def users(request):
+def users(request, id):
     #display the name, count of uploaded quotes and the list of the uploaded quotes
     context = {
-        'user': User.objects.get(name=request.session['user_name']).uploaded_quotes.all()
+        'user': User.objects.get(id=id)
     }
     return render(request,'logreg/users.html',context)
 

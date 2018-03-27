@@ -18,37 +18,27 @@
         </div>
         <div class="myBox">
             <h4>Quotable Quote</h4>
-            {% for posted_by in all_user %}
-                {% for post in posted_by.uploaded_quotes.all %}
+            {% for post in unliked_quotes %}
                     <div class="subquotes">
-                        <p> {{ post.quoted_by }} - {{ post.message }}</p>
-                        <form action="/showUserPost", method="POST">
-                            {% csrf_token %}
-                            <p>posted by: <input class="submitLink" type="submit" name="show_user" value="{{ posted_by.name }}"></p>
-                            <input type="hidden" name="post_id" value="{{ post.id }}">
-                        </form>
-                        <form action="/addFavorite", method="POST">
+                        <p> {{ post.quoted_by }} : {{ post.message }}</p>
+                        <p>posted by: <a href= "/users/{{ post.posted_by.id }}"> {{ post.posted_by.name }} </a></p>
+                        <form action="/createFavorite", method="POST">
                             {% csrf_token %}
                             <input type="hidden" name="post_id" value="{{ post.id }}">
                             <input type="submit" name="add_to_fav" value="Add to My List" >
                         </form>
                     </div>
-                {% endfor %}
             {% endfor %}
         </div>
         <div class="myFav">
             <h4>Your Favorites</h4>
-                {% for my_fav in all_favorites %}
+                {% for post in liked_quotes %}
                         <div class="subquotes">
-                            <p> {{ my_fav.quoted_by }} - {{ my_fav.message }}</p>
-                            <form action="/showUserPost", method="POST">
+                            <p> {{ post.quoted_by }} - {{ post.message }}</p>
+                            <p> posted by:<a href= "/users/{{ post.posted_by.id }}">{{ post.posted_by.name }}</a></p>
+                            <form action="/removeFavorite", method="POST">
                                 {% csrf_token %}
-                                <p>posted by: <input class="submitLink" type="submit" name="show_user" value="{{ my_fave.posted_by }}"></p>
                                 <input type="hidden" name="post_id" value="{{ post.id }}">
-                            </form>
-                            <form action="/delFavorite", method="POST">
-                                {% csrf_token %}
-                                <input type="hidden" name="fav_id" value="{{ my_fav.id }}">
                                 <input type="submit" name="add_to_fav" value="Remove to My List" >
                             </form>
                         </div>
@@ -65,7 +55,7 @@
                 {% endfor %}
             </ul>
             <br>
-            <form action="/addQuote", method="POST">
+            <form action="/createPost", method="POST">
                 {% csrf_token %}  
                 <p>Quoted by: <input type="text" name="quotedBy"></p>
                 <br>

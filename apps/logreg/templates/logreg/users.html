@@ -12,9 +12,9 @@
             <a href="{% url 'dashboard' %}">Dashboard</a> | <a href="{% url 'my_logout' %}">Logout</a>
         </div>
         <div class="user-section">
-            <h3>Posts by: {{ request.session.user_name }}</h3>
-            <h4>Count: {{ user.count }}</h4>
-                {% for post in user %}
+            <h3>Posts by: {{ user.name }}</h3>
+            <h4>Count: {{ user.uploaded_quotes.count }}</h4>
+                {% for post in user.uploaded_quotes.all %}
                     <p> {{ post.quoted_by }} - {{ post.message }}</p>
                 {% endfor %} 
         </div>
